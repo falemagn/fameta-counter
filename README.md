@@ -79,8 +79,8 @@ int array4[] = {
     C4.next<__LINE__>()
 };
 
-// To simulate the case in which two counters shared the same lines in two different files within the same translation unit,
-// we will use hardcoded numbers.
+// To simulate the case in which two counters shared the same lines in two different files
+// within the same translation unit, we will use hardcoded numbers.
 constexpr fameta::counter<1000> C5;
  
 // As if int array5[] = { 0, 1, 2};
