@@ -58,13 +58,13 @@ int array2[] = {
     C2.next<__COUNTER__>()
 };
 
-// Counters can also be decremented: just set a high enough start value and a negative step
+// Counters can also be decremented: just set a negative step
 constexpr fameta::counter<__COUNTER__, 1000, -10> C3;
  
 // As if int array3[] = { 1000, 990, 980 };
 int array3[] = {
     C3.next<__COUNTER__>(),
-    C3.next<__COUNTER__ >(),
+    C3.next<__COUNTER__>(),
     C3.next<__COUNTER__>()
 };
 
@@ -75,7 +75,7 @@ constexpr fameta::counter<__LINE__> C4;
 // As if int array3[] = { 0, 1, 2};
 int array4[] = {
     C4.next<__LINE__>(),
-    C4.next<__LINE__ >(),
+    C4.next<__LINE__>(),
     C4.next<__LINE__>()
 };
 
@@ -119,7 +119,7 @@ int array7[] = {
 
 constexpr struct MyCounter2: fameta::counter<1000, 0, 1, MyCounter2>{} C8;
 
-// As expected, as if int array7[] = { 0, 1, 2}.
+// As expected, as if int array8[] = { 0, 1, 2}.
 int array8[] = {
     C8.next<1001>(),
     C8.next<1030>(),
