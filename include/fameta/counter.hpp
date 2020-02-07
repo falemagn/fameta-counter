@@ -25,7 +25,6 @@ class fameta::counter {
 
     template <typename _>
     struct slot<StartN, _> {
-        constexpr slot(){}
         friend constexpr int slot_value(slot<StartN>) {
             return StartValue-1;
         }
@@ -55,7 +54,6 @@ class fameta::counter {
 
     template <typename _>
     struct slot<StartN, _> {
-        constexpr slot(){}
         friend constexpr auto slot_value(slot<StartN>) {
             return StartValue-1;
         }
