@@ -1,16 +1,16 @@
 // Author: Fabio Alemagna <personal@fabioalemagna.net>
-// Source: https://github.com/falemagn/fameta-counter
+// Source   : https://github.com/falemagn/fameta-counter
 // Inspired to Filip Roséen's work. See https://stackoverflow.com/questions/60082260/c-compile-time-counters-revisited
 
 #ifndef FAMETA_COUNTER_HPP_
 #define FAMETA_COUNTER_HPP_
 
 namespace fameta {
-    template <int StartN, int StartValue = 0>
+    template <int StartN, int StartValue = 0, int Step = 1>
     class counter;
 }
 
-template <int StartN, int StartValue>
+template <int StartN, int StartValue, int Step>
 class fameta::counter {    
 #if defined(__INTEL_COMPILER) || defined(_MSC_VER) || !defined(__cpp_decltype_auto)
     template <int N, typename = void>
@@ -26,7 +26,7 @@ class fameta::counter {
     template <typename _>
     struct slot<StartN, _> {
         friend constexpr int slot_value(slot<StartN>) {
-            return StartValue-1;
+            return StartValue-Step;
         }
     };
 
@@ -55,7 +55,7 @@ class fameta::counter {
     template <typename _>
     struct slot<StartN, _> {
         friend constexpr auto slot_value(slot<StartN>) {
-            return StartValue-1;
+            return StartValue-Step;
         }
     };
 
@@ -82,21 +82,15 @@ class fameta::counter {
 public:    
 
 #if !defined(__clang_major__) || __clang_major__ > 7
-    template <int N, int Step = 1>
+    template <int N>
     static constexpr int next(int R = writer<N, reader(0, slot<N-1>())+Step>::value) {
         return R;
     }
 #else
-    template <int N, int Step = 1>
+    template <int N>
     static constexpr int next(int R = writer<N, reader(0, slot<N>())+Step>::value) {
         return R;
     }
 #endif
-
-#if defined(__cpp_variable_templates)
-    template <int N, int Step = 1>
-    static constexpr int value = next<N, Step>();
-#endif
 };
 
-#endif
