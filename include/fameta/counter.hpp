@@ -12,11 +12,13 @@ namespace fameta {
 
 template <int StartN, int StartValue>
 class fameta::counter {    
-#if defined(__INTEL_COMPILER) || defined (_MSC_VER)
+#if defined(__INTEL_COMPILER) || defined(_MSC_VER) || !defined(__cpp_decltype_auto)
     template <int N, typename = void>
     struct slot {
         #if defined(__INTEL_COMPILER)        
         #   pragma warning disable 1624
+        #elif defined(__GNUC__) && !defined(__clang__)
+        #   pragma GCC diagnostic ignored "-Wnon-template-friend"
         #endif
         friend constexpr int slot_value(slot<N>);
     };
@@ -80,6 +82,7 @@ class fameta::counter {
     };
 
 public:    
+
 #if !defined(__clang_major__) || __clang_major__ > 7
     template <int N, int Step = 1>
     static constexpr int next(int R = writer<N, reader(0, slot<N-1>())+Step>::value) {
@@ -90,6 +93,11 @@ public:
     static constexpr int next(int R = writer<N, reader(0, slot<N>())+Step>::value) {
         return R;
     }
+#endif
+
+#if defined(__cpp_variable_templates)
+    template <int N, int Step = 1>
+    static constexpr int value = next<N, Step>();
 #endif
 };
 
