@@ -6,11 +6,13 @@
 #define FAMETA_COUNTER_HPP_
 
 namespace fameta {
-    template <int StartN, int StartValue = 0, int Step = 1>
+    struct default_counter_tag{};
+    
+    template <int StartN, int StartValue = 0, int Step = 1, typename Tag = default_counter_tag>
     class counter;
 }
 
-template <int StartN, int StartValue, int Step>
+template <int StartN, int StartValue, int Step, typename Tag>
 class fameta::counter {    
 #if defined(__INTEL_COMPILER) || defined(_MSC_VER) || !defined(__cpp_decltype_auto)
     template <int N, typename = void>
