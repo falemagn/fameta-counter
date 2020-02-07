@@ -1,5 +1,5 @@
 // Author: Fabio Alemagna <personal@fabioalemagna.net>
-// Source   : https://github.com/falemagn/fameta-counter
+// Source: https://github.com/falemagn/fameta-counter
 // Inspired to Filip Roséen's work. See https://stackoverflow.com/questions/60082260/c-compile-time-counters-revisited
 
 #ifndef FAMETA_COUNTER_HPP_
@@ -17,12 +17,19 @@ class fameta::counter {
 #if defined(__INTEL_COMPILER) || defined(_MSC_VER) || !defined(__cpp_decltype_auto)
     template <int N, typename = void>
     struct slot {
-        #if defined(__INTEL_COMPILER)        
+        #if defined(__INTEL_COMPILER)     
+        #   pragma warning push   
         #   pragma warning disable 1624
         #elif defined(__GNUC__) && !defined(__clang__)
+        #   pragma GCC diagnostic push
         #   pragma GCC diagnostic ignored "-Wnon-template-friend"
         #endif
         friend constexpr int slot_value(slot<N>);
+        #if defined(__INTEL_COMPILER)     
+        #   pragma warning pop  
+        #elif defined(__GNUC__) && !defined(__clang__)
+        #   pragma GCC diagnostic pop
+        #endif
     };
 
     template <typename _>
@@ -49,9 +56,13 @@ class fameta::counter {
     template <int N, typename = void>
     struct slot {
         #if defined(__GNUC__) && !defined(__clang__)
+        #   pragma GCC diagnostic push
         #   pragma GCC diagnostic ignored "-Wnon-template-friend"
         #endif
         friend constexpr auto slot_value(slot<N>);
+        #if defined(__GNUC__) && !defined(__clang__)
+        #   pragma GCC diagnostic pop
+        #endif
     };
 
     template <typename _>
