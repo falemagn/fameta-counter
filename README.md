@@ -41,54 +41,64 @@ So, to recap, instead of doing `counter::next()` as Roséen's code would have al
 constexpr fameta::counter<__COUNTER__, 100> C;
 
 // As if int array[] = { 100, 101, 102 };
-int array[] = {
+constexpr int array[] = {
     C.next<__COUNTER__>(), 
     C.next<__COUNTER__>(),
     C.next<__COUNTER__>()
 };
+
+static_assert(array[0] == 100 && array[1] == 101 && array[2] == 102, "oops");
 
 // We can instantiate as many counters as we want, as long as we abide by the contract.
 // Third template parameter is the step at which the the counter has to be incremented.
 constexpr fameta::counter<__COUNTER__, 100, 10> C2;
 
 // As if int array2[] = { 100, 110, 120 };
-int array2[] = {
+constexpr int array2[] = {
     C2.next<__COUNTER__>(),
     C2.next<__COUNTER__>(),
     C2.next<__COUNTER__>()
 };
 
+static_assert(array2[0] == 100 && array2[1] == 110 && array2[2] == 120, "oops");
+
 // Counters can also be decremented: just set a negative step
 constexpr fameta::counter<__COUNTER__, 1000, -10> C3;
  
 // As if int array3[] = { 1000, 990, 980 };
-int array3[] = {
+constexpr int array3[] = {
     C3.next<__COUNTER__>(),
     C3.next<__COUNTER__>(),
     C3.next<__COUNTER__>()
 };
+
+static_assert(array3[0] == 1000 && array3[1] == 990 && array3[2] == 980, "oops");
 
 // We could also use __LINE__ and it would still work in **MOST** cases.
 // By default, the start value is set to 0 and the step to 1.
 constexpr fameta::counter<__LINE__> C4;
  
 // As if int array3[] = { 0, 1, 2};
-int array4[] = {
+constexpr int array4[] = {
     C4.next<__LINE__>(),
     C4.next<__LINE__>(),
     C4.next<__LINE__>()
 };
 
-// To simulate the case in which two counters shared the same lines in two different files
-// within the same translation unit, we will use hardcoded numbers.
+static_assert(array4[0] == 0 && array4[1] == 1 && array4[2] == 2, "oops");
+
+// To simulate the case in which two counters shared the same lines in two different files within the same translation unit,
+// we will use hardcoded numbers.
 constexpr fameta::counter<1000> C5;
  
 // As if int array5[] = { 0, 1, 2};
-int array5[] = {
+constexpr int array5[] = {
     C5.next<1010>(),
     C5.next<1020>(),
     C5.next<1030>()
 };
+
+static_assert(array5[0] == 0 && array5[1] == 1 && array5[2] == 2, "oops");
 
 constexpr fameta::counter<1000> C6;
  
@@ -97,11 +107,13 @@ constexpr fameta::counter<1000> C6;
 // Because C6 and C5 share the same type fameta::counter<1000>, 
 // hence C5.next<1030>() and C6.next<1030>() return the same value.
 
-int array6[] = {
+constexpr int array6[] = {
     C6.next<1001>(),
     C6.next<1030>(),
     C6.next<1040>()
 };
+
+static_assert(array6[0] == 0 && array6[1] == 2 && array6[2] == 3, "oops");
 
 // The above suggests us a workaround: what needs to be unique is actually the counter type,
 // which the uniqueness of the monotonically incremental value helps us achieve. But there's another way.
@@ -111,21 +123,25 @@ int array6[] = {
 constexpr struct MyCounter1: fameta::counter<1000, 0, 1, MyCounter1>{} C7;
  
 // As if int array7[] = { 0, 1, 2};
-int array7[] = {
+constexpr int array7[] = {
     C7.next<1010>(),
     C7.next<1020>(),
     C7.next<1030>()
 };
 
+static_assert(array7[0] == 0 && array7[1] == 1 && array7[2] == 2, "oops");
+
 constexpr struct MyCounter2: fameta::counter<1000, 0, 1, MyCounter2>{} C8;
 
 // As expected, as if int array8[] = { 0, 1, 2}.
-int array8[] = {
+constexpr int array8[] = {
     C8.next<1001>(),
     C8.next<1030>(),
     C8.next<1040>()
 };
 
+static_assert(array8[0] == 0 && array8[1] == 1 && array8[2] == 2, "oops");
+
 ```
 
-See a working example on [godbolt](https://godbolt.org/z/YAJRx_)
+See a working example on [godbolt](https://godbolt.org/z/oZyQb4)
