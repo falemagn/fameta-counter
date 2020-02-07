@@ -144,4 +144,4 @@ static_assert(array8[0] == 0 && array8[1] == 1 && array8[2] == 2, "oops");
 
 ```
 
-See a working example on [godbolt](https://godbolt.org/z/oZyQb4)
+See a working example on [godbolt](https://godbolt.org/z/Am5MQU)
