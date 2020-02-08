@@ -35,6 +35,9 @@ So, to recap, instead of doing `counter::next()` as Roséen's code would have al
 | --- |
 | It 's been [noted](https://stackoverflow.com/questions/60082260/c-compile-time-counters-revisited#comment106263031_60082260) that [Anthony Williams](https://stackoverflow.com/users/5597/anthony-williams) on [Stack Overflow](https://stackoverflow.com/a/58200261/566849) proposed a solution that avoids having to pass a _monotonically increasing_ number to each call into the counter, just like Filip Roséen's solution. However, his solution doesn't seem portable across compilers and [has a few quirks](https://stackoverflow.com/questions/51601439/constexpr-counter-that-works-on-gcc-8-and-is-not-restricted-to-namespace-scope/58200261#comment106343647_58200261) also with the compilers that make it work. And I can't fully grasp how it works, where it does. Shame on me. |
 
+| One more short moment |
+| --- |
+| DaemonSnake has produced a version of his `uncostexpr` library that makes use of the new C++20 facilities: [uncostexpr-cpp20](https://github.com/DaemonSnake/unconstexpr-cpp20). His library does lots more than providing a counter, but fameta-counter works also with just C++11. Also read [his announcment on reddit](https://www.reddit.com/r/cpp/comments/e99enu/c20_library_mutable_constexpr_expression_for/).|
 
 ### Example of usage
 
