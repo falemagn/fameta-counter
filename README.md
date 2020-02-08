@@ -31,9 +31,9 @@ There's a workaround, a bit tedious, that will be presented in the example below
 
 So, to recap, instead of doing `counter::next()` as Roséen's code would have allowed us to do, all we need to do is `counter.next<__COUNTER__>()` or, in the rare event that the compiler doesn't provide the `__COUNTER__` macro, `counter.next<__LINE__>()`, which isn't ___that___ bad after all, is it?
 
-| **A moment of your attention, please** |
+| A moment of your attention, please |
 | --- |
-| It 's been [noted](https://stackoverflow.com/questions/60082260/c-compile-time-counters-revisited#comment106263031_60082260) that [Anthony Williams](https://stackoverflow.com/users/5597/anthony-williams) on [Stack Overflow](https://stackoverflow.com/a/58200261/566849) proposed a solution that avoids having to pass a _monotonically increasing_ number to each call into the counter, just like Filip Roséen's solution. However, his solution doesn't seem portable across compilers and has a few quirks also with the compilers that make it work. And I can't fully grasp how it works, where it does. Shame on me. |
+| It 's been [noted](https://stackoverflow.com/questions/60082260/c-compile-time-counters-revisited#comment106263031_60082260) that [Anthony Williams](https://stackoverflow.com/users/5597/anthony-williams) on [Stack Overflow](https://stackoverflow.com/a/58200261/566849) proposed a solution that avoids having to pass a _monotonically increasing_ number to each call into the counter, just like Filip Roséen's solution. However, his solution doesn't seem portable across compilers and [has a few quirks](https://stackoverflow.com/questions/51601439/constexpr-counter-that-works-on-gcc-8-and-is-not-restricted-to-namespace-scope/58200261#comment106343647_58200261) also with the compilers that make it work. And I can't fully grasp how it works, where it does. Shame on me. |
 
 
 ### Example of usage
