@@ -22,7 +22,7 @@ Other kind of counters, more language-aware, have been implemented, like [Copper
 
 The main _trick_ that makes `fameta::counter` work is that a ___monotonically increasing___ value has to be passed to it at construction time and any time the _next_ counter value has to be retrieved. This makes the compiler **always instantiates** a new set of methods to access and modify the counter, which avoids the _"caching problem"_ that seems to affect Roséen's solution.
 
-At this point you might wonder: Isn't a ___monotonically increasing___ value a... counter? Do we really need a counter, to make this counter work? Well, yes, we do, but the values we need don't have to be consecutive neither they need to have a given _start_, we just need them to _increase_ at each call.
+At this point you might wonder: Isn't a ___monotonically increasing___ value a... counter? Do we really need a counter, to make this counter work? Well, yes, we do, but the values we need don't have to be consecutive neither do they need to have a given _start_, we just need them to _increase by an arbitrary amount_ at each call.
 
 #### `__LINE__` and `__COUNTER__`
 Do we have such a thing in the language? Yes, we do, the preprocessor provides us with one such thing: the `__LINE__` macro. However, `__LINE__` is good only _most_ of the times, because it could fail if within the same _translation unit_ two files used two different counters that happened to be positioned at about the same lines in their respective files: remember that we said that each call into the counter has to be __unique__? Well, that might not be the case if we used `__LINE__`. 
@@ -30,6 +30,11 @@ Do we have such a thing in the language? Yes, we do, the preprocessor provides u
 There's a workaround, a bit tedious, that will be presented in the example below, but most compilers also provide a `__COUNTER__` macro, and that is perfect for our needs because it changes value even if used on the same line and has a __unique value__ across the _whole translation unit_.
 
 So, to recap, instead of doing `counter::next()` as Roséen's code would have allowed us to do, all we need to do is `counter.next<__COUNTER__>()` or, in the rare event that the compiler doesn't provide the `__COUNTER__` macro, `counter.next<__LINE__>()`, which isn't ___that___ bad after all, is it?
+
+| **A moment of your attention, please** |
+| --- |
+| It 's been [noted](https://stackoverflow.com/questions/60082260/c-compile-time-counters-revisited#comment106263031_60082260) that [Anthony Williams](https://stackoverflow.com/users/5597/anthony-williams) on [Stack Overflow](https://stackoverflow.com/a/58200261/566849) proposed a solution that avoids having to pass a _monotonically increasing_ number to each call into the counter, just like Filip Roséen's solution. However, his solution doesn't seem portable across compilers and has a few quirks also with the compilers that make it work. And I can't fully grasp how it works, where it does. Shame on me. |
+
 
 ### Example of usage
 
