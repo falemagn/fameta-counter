@@ -37,7 +37,7 @@ So, to recap, instead of doing `counter::next()` as Roséen's code would have al
 
 | One more short moment |
 | --- |
-| DaemonSnake has produced a version of his `uncostexpr` library that makes use of the new C++20 facilities: [uncostexpr-cpp20](https://github.com/DaemonSnake/unconstexpr-cpp20). His library does lots more than providing a counter, but fameta-counter works also with just C++11. Also read [his announcment on reddit](https://www.reddit.com/r/cpp/comments/e99enu/c20_library_mutable_constexpr_expression_for/).|
+| DaemonSnake has produced a version of his `uncostexpr` library that makes use of the new C++20 facilities: [uncostexpr-cpp20](https://github.com/DaemonSnake/unconstexpr-cpp20). His library does lots more than providing a counter, but fameta-counter works also with just C++11. Also read [his announcement on reddit](https://www.reddit.com/r/cpp/comments/e99enu/c20_library_mutable_constexpr_expression_for/).|
 
 ### Example of usage
 
