@@ -15,7 +15,7 @@ namespace fameta {
 template <int StartN, int StartValue, int Step, typename Tag>
 class fameta::counter {    
 #if defined(__INTEL_COMPILER) || defined(_MSC_VER) || !defined(__cpp_decltype_auto)
-    template <int N, typename = void>
+    template <int N>
     struct slot {
         #if defined(__INTEL_COMPILER)     
         #   pragma warning push   
@@ -32,13 +32,6 @@ class fameta::counter {
         #endif
     };
 
-    template <typename _>
-    struct slot<StartN, _> {
-        friend constexpr int slot_value(slot<StartN>) {
-            return StartValue-Step;
-        }
-    };
-
     template <int N, int I>
     struct writer {
         friend constexpr int slot_value(slot<N>) {
@@ -53,7 +46,7 @@ class fameta::counter {
         return R;
     };
 #else
-    template <int N, typename = void>
+    template <int N>
     struct slot {
         #if defined(__GNUC__) && !defined(__clang__)
         #   pragma GCC diagnostic push
@@ -63,13 +56,6 @@ class fameta::counter {
         #if defined(__GNUC__) && !defined(__clang__)
         #   pragma GCC diagnostic pop
         #endif
-    };
-
-    template <typename _>
-    struct slot<StartN, _> {
-        friend constexpr auto slot_value(slot<StartN>) {
-            return StartValue-Step;
-        }
     };
 
     template <int N, int I>
@@ -86,6 +72,8 @@ class fameta::counter {
         return R;
     };
 #endif
+
+    static_assert(sizeof(writer<StartN, StartValue-Step>), "Base case");
 
     template <int N>
     static constexpr int reader(float, slot<N>, int R = reader(0, slot<N-1>())) {
@@ -108,4 +96,3 @@ public:
 };
 
 #endif
-
