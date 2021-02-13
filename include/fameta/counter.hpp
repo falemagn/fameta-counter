@@ -87,9 +87,19 @@ public:
     static constexpr int next(int R = writer<N, reader(0, slot<N-1>())+Step>::value) {
         return R;
     }
+
+    template <int N>
+    static constexpr int current(int R = reader(0, slot<N-1>())) {
+        return R;
+    }    
 #else
     template <int N>
     static constexpr int next(int R = writer<N, reader(0, slot<N>())+Step>::value) {
+        return R;
+    }
+    
+    template <int N>
+    static constexpr int current(int R = reader(0, slot<N>())) {
         return R;
     }
 #endif
