@@ -1,8 +1,6 @@
 #ifndef FAMETA_COUNTER_HPP
 #define FAMETA_COUNTER_HPP
 
-#include <cstddef>
-
 #if !defined(FAMETA_FRIEND_INJECTION_PRAGMA_BEGIN) && !defined(FAMETA_FRIEND_INJECTION_PRAGMA_END)
 #	if defined(__INTEL_COMPILER)
 #		define FAMETA_FRIEND_INJECTION_PRAGMA_BEGIN _Pragma("warning push"); _Pragma("warning disable 1624");
