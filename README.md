@@ -143,3 +143,4 @@ constexpr int array7[] = {
 
 static_assert(array7[0] == 0 && array7[1] == 1 && array7[2] == 2, "oops");
 ```
+See it working on godbolt: https://godbolt.org/z/YaYaqbfxc
