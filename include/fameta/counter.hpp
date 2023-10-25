@@ -1,3 +1,7 @@
+// Author: Fabio Alemagna <personal@fabioalemagna.net>
+// Source: https://github.com/falemagn/fameta-counter
+// Inspired to Filip Roséen's work. See https://stackoverflow.com/questions/60082260/c-compile-time-counters-revisited
+
 #ifndef FAMETA_COUNTER_HPP
 #define FAMETA_COUNTER_HPP
 
