@@ -5,6 +5,17 @@
 #ifndef FAMETA_COUNTER_HPP
 #define FAMETA_COUNTER_HPP
 
+#if !defined(__cpp_if_constexpr) || __cpp_if_constexpr < 201606L
+#   if defined(FAMETA_BINARY_LOOKUP)
+#       error "Binary lookup is only available when compiling with c++17 and above"
+#       undef FAMETA_BINARY_LOOKUP
+#   endif
+#else
+#   if !defined(FAMETA_BINARY_LOOKUP)
+#       define FAMETA_BINARY_LOOKUP 1
+#   endif
+#endif
+
 #if !defined(FAMETA_FRIEND_INJECTION_PRAGMA_BEGIN) && !defined(FAMETA_FRIEND_INJECTION_PRAGMA_END)
 #	if defined(__INTEL_COMPILER)
 #		define FAMETA_FRIEND_INJECTION_PRAGMA_BEGIN _Pragma("warning push"); _Pragma("warning disable 1624");
@@ -13,7 +24,8 @@
 #		define FAMETA_FRIEND_INJECTION_PRAGMA_BEGIN _Pragma("GCC diagnostic push"); _Pragma("GCC diagnostic ignored \"-Wundefined-internal\"");
 #		define FAMETA_FRIEND_INJECTION_PRAGMA_END   _Pragma("GCC diagnostic pop");
 #	elif defined(__GNUC__)
-#		define FAMETA_FRIEND_INJECTION_PRAGMA_BEGIN _Pragma("GCC diagnostic push"); _Pragma("GCC diagnostic ignored \"-Wnon-template-friend\"");
+#		define FAMETA_FRIEND_INJECTION_PRAGMA_BEGIN _Pragma("GCC diagnostic push"); _Pragma("GCC diagnostic ignored \"-Wnon-template-friend\""); \
+_Pragma("GCC diagnostic ignored \"-Wunused-function\"");
 #		define FAMETA_FRIEND_INJECTION_PRAGMA_END   _Pragma("GCC diagnostic pop");
 #	else
 #		define FAMETA_FRIEND_INJECTION_PRAGMA_BEGIN
@@ -34,14 +46,14 @@ public:
 	template <typename Unique>
 	static constexpr int next()
 	{
-		return next<Unique>(0);
+		return next<Unique>(0)*Step+Start;
 	}
 
 	template <unsigned long long UniqueValue>
 	static constexpr int next()
 	{
 		struct Unique{};
-		return next<Unique>(0);
+		return next<Unique>(0)*Step+Start;
 	}
 
 	template <typename Unique>
@@ -77,15 +89,52 @@ private:
 		enum { value = I };
 	};
 
+#if FAMETA_BINARY_LOOKUP
 	// If slot_allocated(slot<I>) has NOT been defined, then SFINAE will keep this function out of the overload set...
-	template <typename Unique, int I = Start, bool = slot_allocated(slot<I>())>
+	template <typename Unique, int I = 0, int P = 0, bool = slot_allocated(slot<I + (1<<P)-1>())>
 	static constexpr int next(int)
 	{
-		return next<Unique, I+Step>(0);
+		return next<Unique, I, P+1>(0);
 	}
 
 	// ...And this function will be used, instead, which will define slot_allocated(slot<I>) via allocate_slot<I>.
-	template <typename Unique, int I = Start>
+	template <typename Unique, int I = 0, int P = 0>
+	static constexpr int next(double)
+	{
+		if constexpr (P == 0)
+			return allocate_slot<I>::value;
+		else
+			return next<Unique, I+(1<<(P-1)), 0>(0);
+	}
+
+	// If slot_allocated(slot<I>) has NOT been defined, then SFINAE will keep this function out of the overload set...
+	template <typename Unique, int I = 0, int P = 0, bool = slot_allocated(slot<I + (1<<P)-1>())>
+	static constexpr int current(int)
+	{
+		return current<Unique, I, P+1>(0);
+	}
+
+	// ...And this function will be used, instead, which will return the current counter, or assert in case next() hasn't been called yet.
+	template <typename Unique, int I = 0, int P = 0>
+	static constexpr int current(double)
+	{
+		static_assert(I != 0 || P != 0, "You must invoke next() first");
+
+		if constexpr (P == 0)
+			return I-1;
+		else
+			return current<Unique, I+(1<<(P-1)), 0>(0);
+	}
+#else // FAMETA_BINARY_LOOKUP
+	// If slot_allocated(slot<I>) has NOT been defined, then SFINAE will keep this function out of the overload set...
+	template <typename Unique, int I = 0, bool = slot_allocated(slot<I>())>
+	static constexpr int next(int)
+	{
+		return next<Unique, I+1>(0);
+	}
+
+	// ...And this function will be used, instead, which will define slot_allocated(slot<I>) via allocate_slot<I>.
+	template <typename Unique, int I = 0>
 	static constexpr int next(double)
 	{
 		return allocate_slot<I>::value;
@@ -95,17 +144,20 @@ private:
 	template <typename Unique, int I = Start, bool = slot_allocated(slot<I>())>
 	static constexpr int current(int)
 	{
-		return current<Unique, I+Step>(0);
+		return current<Unique, I+1>(0);
 	}
 
 	// ...And this function will be used, instead, which will return the current counter, or assert in case next() hasn't been called yet.
 	template <typename Unique, int I = Start>
 	static constexpr int current(double)
 	{
-		static_assert(I != Start, "You must invoke next() first");
+		static_assert(I != 0, "You must invoke next() first");
 
-		return I-Step;
+		return I-1;
 	}
+
+#endif // !FAMETA_BINARY_LOOKUP
+
 };
 
 }
