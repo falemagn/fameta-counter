@@ -6,14 +6,26 @@
 #define FAMETA_COUNTER_HPP
 
 #if !defined(__cpp_if_constexpr) || __cpp_if_constexpr < 201606L
-#   if defined(FAMETA_BINARY_LOOKUP)
-#       error "Binary lookup is only available when compiling with c++17 and above"
-#       undef FAMETA_BINARY_LOOKUP
-#   endif
+#   if defined(FAMETA_BINARY_LOOKUP) && FAMETA_BINARY_LOOKUP
+#		error "Binary lookup is only available when compiling with c++17 and above"
+#	endif
+#
+#	undef FAMETA_BINARY_LOOKUP
+#	define FAMETA_BINARY_LOOKUP 0
+#	define FAMETA_UNIQUE_VALUE_TYPE unsigned long long
 #else
 #   if !defined(FAMETA_BINARY_LOOKUP)
 #       define FAMETA_BINARY_LOOKUP 1
 #   endif
+#	define FAMETA_UNIQUE_VALUE_TYPE auto
+#endif
+
+#if defined(__GNUC__) && !defined(__clang__)
+// There appears to be a bug on gcc that makes it emit a diagnostic that cannot be turned off in certain conditions. This will silence it.
+// See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=112267
+#	define FAMETA_FRIEND_RETURN_TYPE auto
+#else
+#	define FAMETA_FRIEND_RETURN_TYPE bool
 #endif
 
 #if !defined(FAMETA_FRIEND_INJECTION_PRAGMA_BEGIN) && !defined(FAMETA_FRIEND_INJECTION_PRAGMA_END)
@@ -49,7 +61,7 @@ public:
 		return next<Unique>(0)*Step+Start;
 	}
 
-	template <unsigned long long UniqueValue>
+	template <FAMETA_UNIQUE_VALUE_TYPE>
 	static constexpr int next()
 	{
 		struct Unique{};
@@ -62,7 +74,7 @@ public:
 		return current<Unique>(0)*Step+Start;
 	}
 
-	template <unsigned long long UniqueValue>
+	template <FAMETA_UNIQUE_VALUE_TYPE>
 	static constexpr int current()
 	{
 		struct Unique{};
@@ -75,14 +87,14 @@ private:
 	{
 		FAMETA_FRIEND_INJECTION_PRAGMA_BEGIN
 
-			friend constexpr bool slot_allocated(slot<I>);
+			friend constexpr FAMETA_FRIEND_RETURN_TYPE slot_allocated(slot<I>);
 
 		FAMETA_FRIEND_INJECTION_PRAGMA_END
 	};
 
 	template <int I>
 	struct allocate_slot {
-		friend constexpr bool slot_allocated(slot<I>) {
+		friend constexpr FAMETA_FRIEND_RETURN_TYPE slot_allocated(slot<I>) {
 			return true;
 		}
 
@@ -155,7 +167,6 @@ private:
 
 		return I-1;
 	}
-
 #endif // !FAMETA_BINARY_LOOKUP
 
 };
