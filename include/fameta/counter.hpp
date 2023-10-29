@@ -25,7 +25,7 @@
 #		define FAMETA_FRIEND_INJECTION_PRAGMA_END   _Pragma("GCC diagnostic pop");
 #	elif defined(__GNUC__)
 #		define FAMETA_FRIEND_INJECTION_PRAGMA_BEGIN _Pragma("GCC diagnostic push"); _Pragma("GCC diagnostic ignored \"-Wnon-template-friend\""); \
-_Pragma("GCC diagnostic ignored \"-Wunused-function\"");
+																					_Pragma("GCC diagnostic ignored \"-Wunused-function\"");
 #		define FAMETA_FRIEND_INJECTION_PRAGMA_END   _Pragma("GCC diagnostic pop");
 #	else
 #		define FAMETA_FRIEND_INJECTION_PRAGMA_BEGIN
@@ -59,14 +59,14 @@ public:
 	template <typename Unique>
 	static constexpr int current()
 	{
-		return current<Unique>(0);
+		return current<Unique>(0)*Step+Start;
 	}
 
 	template <unsigned long long UniqueValue>
 	static constexpr int current()
 	{
 		struct Unique{};
-		return current<Unique>(0);
+		return current<Unique>(0)*Step+Start;
 	}
 
 private:
